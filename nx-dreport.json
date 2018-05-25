@@ -1,0 +1,26 @@
+{
+    "name": "Dreport",
+    "title_id": "0x4200000000000000",
+    "main_thread_stack_size": "0x1000",
+    "main_thread_priority": 49,
+    "default_cpu_id": 3,
+    "process_category": 1,
+    "kernel_capabilities": {
+        "handle_table_size": 128,
+        "syscalls": {
+            "svcMapMemory": "0x04",
+            "svcUnmapMemory": "0x05",
+            "svcQueryMemory": "0x06",
+            "svcExitProcess": "0x07",
+            "svcSleepThread": "0x0B",
+            "svcCloseHandle": "0x16",
+            "svcWaitSynchronization": "0x18",
+            "svcArbitrateLock": "0x1A",
+            "svcArbitrateUnlock": "0x1B",
+            "svcConnectToNamedPort": "0x1F",
+            "svcSendSyncRequest": "0x21",
+            "svcBreak": "0x26",
+            "svcGetInfo": "0x29"
+        }
+    }
+}
