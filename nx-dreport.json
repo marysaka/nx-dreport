@@ -19,6 +19,7 @@
             "svcArbitrateUnlock": "0x1B",
             "svcConnectToNamedPort": "0x1F",
             "svcSendSyncRequest": "0x21",
+            "svcGetProcessId": "0x24",            
             "svcBreak": "0x26",
             "svcGetInfo": "0x29"
         }
