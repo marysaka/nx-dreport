@@ -1,20 +1,20 @@
 #include <switch.h>
 
 #define ERPT_SAVE_ID 0x80000000000000D1
+#define TITLE_ID 0x4200000000000000
+#define HEAP_SIZE 0x1000
 
 // we aren't an applet
 u32 __nx_applet_type = AppletType_None;
 
 // setup a fake heap (we don't need the heap anyway)
-char   fake_heap[0x1000];
+char   fake_heap[HEAP_SIZE];
 
-void fatalLater(Result err)
-{
+void fatalLater(Result err) {
 #ifdef DEBUG
     Handle srv;
 
-    while (R_FAILED(smGetServiceOriginal(&srv, smEncodeName("fatal:u"))))
-    {
+    while (R_FAILED(smGetServiceOriginal(&srv, smEncodeName("fatal:u")))) {
         // wait one sec and retry
         svcSleepThread(1000000000L);
     }
@@ -39,6 +39,10 @@ void fatalLater(Result err)
 
     ipcDispatch(srv);
     svcCloseHandle(srv);
+#else
+    (void)err;
+    svcExitProcess();
+    __builtin_unreachable();
 #endif
 }
 
@@ -49,7 +53,7 @@ void __libnx_initheap(void) {
 
     // setup newlib fake heap
     fake_heap_start = fake_heap;
-    fake_heap_end   = fake_heap + 0x1000;
+    fake_heap_end   = fake_heap + HEAP_SIZE;
 }
 
 void __appInit(void) {
@@ -99,8 +103,7 @@ Result fsDeleteSaveData(u64 saveID) {
     return rc;
 }
 
-void registerFspLr()
-{
+void registerFspLr() {
     if (kernelAbove400())
         return;
 
@@ -109,21 +112,22 @@ void registerFspLr()
         fatalLater(rc);
 
     u64 pid;
-    svcGetProcessId(&pid, 0xFFFF8001);
+    svcGetProcessId(&pid, CUR_PROCESS_HANDLE);
 
-    rc = fsprRegisterProgram(pid, 0x4200000000000000, FsStorageId_NandSystem, NULL, 0, NULL, 0);
+    rc = fsprRegisterProgram(pid, TITLE_ID, FsStorageId_NandSystem, NULL, 0, NULL, 0);
     if (R_FAILED(rc))
         fatalLater(rc);
     fsprExit();
 }
 
 int main(int argc, char **argv) {
+    (void)argc;
+    (void)argv;
     registerFspLr();
     // Delete erpt saves
     Result rc = fsDeleteSaveData(ERPT_SAVE_ID);
 
     if (R_FAILED(rc))
         fatalLater(rc);
-
     return 0;
 }
